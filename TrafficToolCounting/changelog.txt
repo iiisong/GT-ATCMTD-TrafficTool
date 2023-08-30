@@ -1,0 +1,22 @@
+TrafficToolCounting
+
+1.0.4 - added views
+    > added new views 
+
+1.0.3 - proportion changes
+    > adjusted proportions for much larger right panel
+    > adjusted proportions for much larger video panel
+    > removed filler lanes taking space if not used
+
+1.0.2 - minor feature additions
+    > added Q10 lane num
+    > enabled max_lanes flag
+    > changed default max_lanes to 20
+
+1.0.1 - bug fixes
+    > creating files now successful allows editting, prints every time
+    > optimized num detection through 5 pixel system, less room for error
+    > wrote general code for pytesseract but not frames still bypass occasionally so 
+      it is disabled as not currently worth hassle to download/setup
+      
+1.0.0 - released
