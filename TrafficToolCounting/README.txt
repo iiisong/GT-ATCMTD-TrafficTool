@@ -1,6 +1,6 @@
-TrafficToolCounting v1.0.3
+TrafficToolCounting v1.1.0
 
-(Yet Unnamed) TrafficToolCounting v.1.0.3
+(Yet Unnamed) TrafficToolCounting v.1.1.0
 
 Interactive interface for traffic data collection.
 

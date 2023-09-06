@@ -1,5 +1,13 @@
 TrafficToolCounting
 
+1.1.0 - github + code cleanup + some features added
+    > added mostly proper PEP257 docstring convention
+    > added increment and decrement feature
+    > added relative frame forward and backward feature
+    > added zero button
+    > uploaded to github
+    > working on folder organization, taking in account deprecated tools
+
 1.0.4 - added views
     > added new views 
 

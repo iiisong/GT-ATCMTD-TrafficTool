@@ -1,14 +1,14 @@
-# TrafficTool v1.0.4
+# TrafficTool v1.1.0
 
-import tkinter as tk
-from tkinter import Tk, ttk, filedialog
-from PIL import Image, ImageTk, ImageOps
+import tkinter as tk # ui library
+from tkinter import Tk, ttk, filedialog # ui library
+ 
+from PIL import Image, ImageTk, ImageOps # image processing library
+import cv2 # image processing library
 
-import cv2
-import sys
-import argparse
+import argparse # parse command line
 
-from datetime import date, datetime, time, timedelta
+from datetime import date, datetime, time, timedelta # system time library
 
 # helper python code
 import timeParse # extract time data from frames
@@ -43,14 +43,27 @@ class TrafficTool(Tk):
                  width=800, 
                  height=500,
                  debug=False):
+        '''TrafficTool is the main root object that combines and configures both Input Panel and Video Panel to create
+        an interface to speed up manual data entry for car congestion data.
+        
+        Args:
+            file_path: preset file path of video (default to None)
+            view_name: preset view name (default to None)
+            output_dir: preset excel output (default to None)
+            time_interval: time duration of 1 time "chunk" (default to 5 sec)
+            num_lanes: number of max lanes to display on input panel (default to 6)
+            max_length: maximum data value to display on input panel (default to 5)
+            width: initial width of tool, can be resized (defualt to 800px)
+            height: initial height of tool, can be resized (default to 500px)
+            debug: debug mode for addit info
+        '''
         
         super().__init__()
         
+        # process input params
         time_interval = 5 if time_interval == None else int(time_interval)
         num_lanes = 6 if num_lanes == None else int(num_lanes)
-        max_length = 20 if max_length == None else int(max_length)
         debug = False if debug == None else debug
-        
         
         self.debug = debug
         
@@ -69,7 +82,7 @@ class TrafficTool(Tk):
                                     relief="groove",
                                     borderwidth=1)
         self.title_frame.grid(row=0, column=0, columnspan=2, sticky="nsew")
-        self.title_label = tk.Label(master=self.title_frame, text="Traffic Tool Counting v.1.0.4",)
+        self.title_label = tk.Label(master=self.title_frame, text="Traffic Tool Counting v.1.0.3",)
         self.title_label.pack()
         self.rowconfigure(0, weight=0) # static title height
         
@@ -127,39 +140,41 @@ class TrafficTool(Tk):
     
     
     def debug_print(self, string):
+        '''Print only if debug mode is on.
+        
+        Args:
+            string: string to print
+        '''
         if self.debug: print(string)
     
 if __name__ == "__main__":
-    
-    msg = '''
-        (Yet Unnamed) TrafficTool v.1.0.1
-        \n
-        \nInteractive interface for traffic data collection
-        \n
-        \n(Options)
-        \n-fp [filename] : specify the filepath going in
-        \n-d             : debug on
-        \n-nl            : number of lanes (defaults to 6)
-        '''
+#     msg = '''
+#         (Yet Unnamed) TrafficTool v.1.0.0
+#         \n
+#         \nInteractive interface for traffic data collection
+#         \n
+#         \n(Options)
+#         \n-fp [filename] : specify the filepath going in
+#         \n-d             : debug on
+#         \n-nl            : number of lanes (defaults to 6)
+#         '''
 
-    parser = argparse.ArgumentParser(description=msg)
-    parser.add_argument("-o", "--output_dir", help = "directory to store output")
-    parser.add_argument("-vfp", "--vfile_path", help = "video file path")
-    parser.add_argument("-vn", "--view_name", help = "video view name")
-    parser.add_argument("-ti", "--time_interval", help = "time length of each interval (default 5)")
-    parser.add_argument("-nl", "--num_lanes", help = "number of lanes (default 6)")
-    parser.add_argument("-ml", "--max_length", help = "maximum length of cars (default 20)")
-    parser.add_argument("-d", "--debug", help = "toggle debug mode", action="store_true")
-    args=parser.parse_args()
+#     parser = argparse.ArgumentParser(description=msg)
+#     parser.add_argument("-o", "--output_dir", help = "directory to store output")
+#     parser.add_argument("-vn", "--view_name", help = "video view name")
+#     parser.add_argument("-ofp", "--ofile_path", help = "overlay file path")
+#     parser.add_argument("-ti", "--time_interval", help = "time length of each interval (default 5)")
+#     parser.add_argument("-nl", "--num_lanes", help = "number of lanes (default 6)")
+#     parser.add_argument("-d", "--debug", help = "toggle debug mode", action="store_true")
+#     args=parser.parse_args()
     
-    trafficTool = TrafficTool(file_path=args.vfile_path, 
-                              view_name=args.view_name,
-                              output_dir=args.output_dir, 
-                              time_interval=args.time_interval, 
-                              num_lanes=args.num_lanes, 
-                              max_length=args.max_length,
-                              debug=args.debug)
+#     trafficTool = TrafficTool(file_path=args.vfile_path, 
+#                               view_name=args.view_name,
+#                               output_dir=args.output_dir, 
+#                               time_interval=args.time_interval, 
+#                               num_lanes=args.num_lanes, 
+#                               debug=args.debug)
         
 #     trafficTool = TrafficTool(file_path="vids\\TLC00005.mp4", overlay_path="overlays\\Q11.png", output_dir="testest", debug=True)
-#     trafficTool = TrafficTool(debug=True)
+    trafficTool = TrafficTool(debug=True)
     trafficTool.mainloop()
