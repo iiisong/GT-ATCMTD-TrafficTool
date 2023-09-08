@@ -183,10 +183,10 @@ class InputPanel(tk.Frame):
                                                      bg="white", 
                                                      highlightbackground="systemWindowBackgroundColor")  
                 except:
-                    self.button_list[length][lane].config(relief="raised", 
-                                                          font="sans 10", 
-                                                          bg="white", 
-                                                          highlightbackground="systemWindow")
+                    self.button_list[l][lane].config(relief="raised", 
+                                                     font="sans 10", 
+                                                     bg="white", 
+                                                     highlightbackground="systemWindow")
         
         # set new value if not-default (default already set)
         #if length != self.default_val:
