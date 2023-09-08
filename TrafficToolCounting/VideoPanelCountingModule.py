@@ -479,9 +479,13 @@ class VideoPanel():
                 self.rel_offset_buttons[btn].config(relief="sunken",
                                                    highlightbackground="yellow")
             else:
-                self.rel_offset_buttons[btn].config(relief="raised",
-                                                   highlightbackground="systemWindowBackgroundColor")
-            
+                try:
+                    self.rel_offset_buttons[btn].config(relief="raised",
+                                                       highlightbackground="systemWindowBackgroundColor")
+                except:
+
+                    self.rel_offset_buttons[btn].config(relief="raised",
+                                                       highlightbackground="systemWindow")
         if btn: self._update_display()
             
             
