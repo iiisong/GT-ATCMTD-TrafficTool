@@ -572,7 +572,7 @@ class InputPanel(tk.Frame):
         self.parent.rowconfigure((self.max_length + 4), weight=1) 
 
         self.entryButton = tk.Button(master=self.entry_frame, 
-                                     text=f"Enter Entry",
+                                     text=f"Enter Entry\n[Space]",
                                      font='sans 10',
                                      state="disabled",
                                      command=self.enterEntry)

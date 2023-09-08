@@ -175,7 +175,7 @@ class VideoPanel():
         frame.grid(row=0, column=2, sticky="nsew", pady=5, padx=5)
 
         self.back_button = tk.Button(master=frame, 
-                                 text=f"-{self.time_chunk.total_seconds()}s",
+                                 text=f"-{self.time_chunk.total_seconds()}s\n[←]",
                                  font='sans 10',
                                  bg="white",
                                  command=self._jumpBackChunk)
@@ -190,7 +190,7 @@ class VideoPanel():
         frame.grid(row=0, column=3, sticky="nsew", pady=5, padx=5)
 
         self.next_button = tk.Button(master=frame, 
-                                 text=f"+{self.time_chunk.total_seconds()}s",
+                                 text=f"+{self.time_chunk.total_seconds()}s\n[→]",
                                  font='sans 10',
                                  bg="white",
                                  command=self._jumpNextChunk)
