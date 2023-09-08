@@ -383,10 +383,16 @@ class InputPanel(tk.Frame):
         # reset all the buttons in the panel
         for l in range(self.max_length + 1):
             for r in range(self.num_lanes):
-                self.button_list[l][r].config(relief="raised", 
-                                              font='sans 10', 
-                                              bg="white",
-                                              highlightbackground="systemWindowBackgroundColor")
+                try:
+                    self.button_list[l][r].config(relief="raised", 
+                                                  font='sans 10', 
+                                                  bg="white",
+                                                  highlightbackground="systemWindowBackgroundColor")
+                except:
+                    self.button_list[l][r].config(relief="raised", 
+                                                  font='sans 10', 
+                                                  bg="white",
+                                                  highlightbackground="systemWindow")
     
     def updateTimeIndex(self, time_index):
         '''Retrieves the frame time for the data entry, called from video panel.
@@ -547,14 +553,22 @@ class InputPanel(tk.Frame):
                     borderwidth=1,
                 ))
                 self.button_frame_list[i][j].grid(row=i+3, column=j, sticky="nsew")
-                
-                self.button_list[i].append(tk.Button(master=self.button_frame_list[i][j], 
-                                                     text=f"{i}",
-                                                     font='sans 10',
-                                                     bg="white",
-                                                     highlightbackground="systemWindowBackgroundColor",
-                                                     state="disabled",
-                                                     command=lambda j=j, i=i : self.inputLaneStatus(j, i)))
+                try:
+                    self.button_list[i].append(tk.Button(master=self.button_frame_list[i][j], 
+                                                         text=f"{i}",
+                                                         font='sans 10',
+                                                         bg="white",
+                                                         highlightbackground="systemWindowBackgroundColor",
+                                                         state="disabled",
+                                                         command=lambda j=j, i=i : self.inputLaneStatus(j, i)))
+                except:
+                    self.button_list[i].append(tk.Button(master=self.button_frame_list[i][j], 
+                                                         text=f"{i}",
+                                                         font='sans 10',
+                                                         bg="white",
+                                                         highlightbackground="systemWindow",
+                                                         state="disabled",
+                                                         command=lambda j=j, i=i : self.inputLaneStatus(j, i)))
                 self.button_list[i][j].pack(fill=fill, expand=expand)
         
         # ===IN-PROGRESS===
