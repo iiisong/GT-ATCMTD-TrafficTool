@@ -98,6 +98,7 @@ class InputPanel(tk.Frame):
         self.loadLanes(self.display_lanes)
         
         self.setKeyBinds()
+
         
     def loadLanes(self, display_lanes, show=False):
         '''Loads input panels with set number of lanes to display.
@@ -150,10 +151,17 @@ class InputPanel(tk.Frame):
             # debug info
             self.debug_print("current button re-pressed, button raised")
             # reset current selected to raised
-            self.button_list[length][lane].config(relief="raised", 
-                                                  font="sans 10", 
-                                                  bg="white", 
-                                                  highlightbackground="systemWindowBackgroundColor")
+            try:
+                self.button_list[length][lane].config(relief="raised", 
+                                                      font="sans 10", 
+                                                      bg="white", 
+                                                      highlightbackground="systemWindowBackgroundColor")
+            except:
+                self.button_list[length][lane].config(relief="raised", 
+                                                      font="sans 10", 
+                                                      bg="white", 
+                                                      highlightbackground="systemWindow")
+
             # set current value to default
             self.curr_status[lane] = self.default_val
             return
@@ -169,10 +177,16 @@ class InputPanel(tk.Frame):
         for l in range(self.max_length + 1):
             # if not new selection, deselect it
             if l != length:
-                self.button_list[l][lane].config(relief="raised", 
-                                                 font='sans 10', 
-                                                 bg="white", 
-                                                 highlightbackground="systemWindowBackgroundColor")
+                try:
+                    self.button_list[l][lane].config(relief="raised", 
+                                                     font='sans 10', 
+                                                     bg="white", 
+                                                     highlightbackground="systemWindowBackgroundColor")  
+                except:
+                    self.button_list[length][lane].config(relief="raised", 
+                                                          font="sans 10", 
+                                                          bg="white", 
+                                                          highlightbackground="systemWindow")
         
         # set new value if not-default (default already set)
         #if length != self.default_val:
