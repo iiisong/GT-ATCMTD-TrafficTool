@@ -37,7 +37,7 @@ class TrafficTool(Tk):
                  file_path=None, 
                  view_name=None,
                  output_dir=None,
-                 time_interval=5, 
+                 time_interval=1, 
                  num_lanes=6,
                  max_length=20,
                  width=800, 
@@ -61,7 +61,7 @@ class TrafficTool(Tk):
         super().__init__()
         
         # process input params
-        time_interval = 5 if time_interval == None else int(time_interval)
+        time_interval = 1 if time_interval == None else int(time_interval)
         num_lanes = 6 if num_lanes == None else int(num_lanes)
         debug = False if debug == None else debug
         

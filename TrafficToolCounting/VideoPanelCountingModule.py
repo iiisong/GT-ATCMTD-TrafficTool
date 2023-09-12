@@ -142,7 +142,7 @@ class VideoPanel():
             relief="raised",
             borderwidth=1,
         )
-        frame.grid(row=0, column=0, sticky="nsew", pady=5, padx=5)
+        frame.grid(row=1, column=0, sticky="nsew", pady=5, padx=5)
 
         self.start_button = tk.Button(master=frame, 
                                  text=f"Start",
@@ -151,7 +151,22 @@ class VideoPanel():
                                  command=self._jumpStart)
         self.start_button.pack(fill=fill, expand=expand)
         
-        # double back time button
+        # Long (*-10) back time button
+        frame = ttk.Frame(
+            master=self.controls_frame,
+            relief="raised",
+            borderwidth=1,
+        )
+        frame.grid(row=0, column=0, sticky="nsew", pady=5, padx=5)
+
+        self.double_back_button = tk.Button(master=frame, 
+                                 text=f"-{10 * self.time_chunk.total_seconds()}s",
+                                 font='sans 10',
+                                 bg="white",
+                                 command=self._jumpLongBackChunk)
+        self.double_back_button.pack(fill=fill, expand=expand)
+        
+        # back (*-5) time button
         frame = ttk.Frame(
             master=self.controls_frame,
             relief="raised",
@@ -159,14 +174,14 @@ class VideoPanel():
         )
         frame.grid(row=0, column=1, sticky="nsew", pady=5, padx=5)
 
-        self.double_back_button = tk.Button(master=frame, 
-                                 text=f"-{2 * self.time_chunk.total_seconds()}s",
+        self.back_button = tk.Button(master=frame, 
+                                 text=f"-{5 * self.time_chunk.total_seconds()}s\n[←]",
                                  font='sans 10',
                                  bg="white",
-                                 command=self._jumpDoubleBackChunk)
-        self.double_back_button.pack(fill=fill, expand=expand)
-        
-        # back time button
+                                 command=self._jumpBackChunk)
+        self.back_button.pack(fill=fill, expand=expand)
+
+        # short (*-1) back time button
         frame = ttk.Frame(
             master=self.controls_frame,
             relief="raised",
@@ -174,14 +189,14 @@ class VideoPanel():
         )
         frame.grid(row=0, column=2, sticky="nsew", pady=5, padx=5)
 
-        self.back_button = tk.Button(master=frame, 
-                                 text=f"-{self.time_chunk.total_seconds()}s\n[←]",
+        self.double_next_button = tk.Button(master=frame, 
+                                 text=f"+{self.time_chunk.total_seconds()}s",
                                  font='sans 10',
                                  bg="white",
-                                 command=self._jumpBackChunk)
-        self.back_button.pack(fill=fill, expand=expand)
-        
-        # next time button
+                                 command=self._jumpShortNextChunk)
+        self.double_next_button.pack(fill=fill, expand=expand)
+
+        # Short (*1) next time button
         frame = ttk.Frame(
             master=self.controls_frame,
             relief="raised",
@@ -189,14 +204,14 @@ class VideoPanel():
         )
         frame.grid(row=0, column=3, sticky="nsew", pady=5, padx=5)
 
-        self.next_button = tk.Button(master=frame, 
-                                 text=f"+{self.time_chunk.total_seconds()}s\n[→]",
+        self.double_next_button = tk.Button(master=frame, 
+                                 text=f"+{self.time_chunk.total_seconds()}s",
                                  font='sans 10',
                                  bg="white",
-                                 command=self._jumpNextChunk)
-        self.next_button.pack(fill=fill, expand=expand)
+                                 command=self._jumpShortNextChunk)
+        self.double_next_button.pack(fill=fill, expand=expand)
         
-        # double next time button
+        # next (*5) time button
         frame = ttk.Frame(
             master=self.controls_frame,
             relief="raised",
@@ -204,11 +219,26 @@ class VideoPanel():
         )
         frame.grid(row=0, column=4, sticky="nsew", pady=5, padx=5)
 
-        self.double_next_button = tk.Button(master=frame, 
-                                 text=f"+{2 * self.time_chunk.total_seconds()}s",
+        self.next_button = tk.Button(master=frame, 
+                                 text=f"+{5 * self.time_chunk.total_seconds()}s\n[→]",
                                  font='sans 10',
                                  bg="white",
-                                 command=self._jumpDoubleNextChunk)
+                                 command=self._jumpNextChunk)
+        self.next_button.pack(fill=fill, expand=expand)
+        
+        # Long (*10) next time button
+        frame = ttk.Frame(
+            master=self.controls_frame,
+            relief="raised",
+            borderwidth=1,
+        )
+        frame.grid(row=0, column=5, sticky="nsew", pady=5, padx=5)
+
+        self.double_next_button = tk.Button(master=frame, 
+                                 text=f"+{10 * self.time_chunk.total_seconds()}s",
+                                 font='sans 10',
+                                 bg="white",
+                                 command=self._jumpLongNextChunk)
         self.double_next_button.pack(fill=fill, expand=expand)
         
         # end time button
@@ -217,7 +247,7 @@ class VideoPanel():
             relief="raised",
             borderwidth=1,
         )
-        frame.grid(row=0, column=5, sticky="nsew", pady=5, padx=5)
+        frame.grid(row=1, column=5, sticky="nsew", pady=5, padx=5)
 
         self.end_button = tk.Button(master=frame, 
                                  text=f"End",
@@ -232,7 +262,7 @@ class VideoPanel():
             relief="raised",
             borderwidth=1,
         )
-        frame.grid(row=1, column=0, sticky="nsew", pady=5, padx=5)
+        frame.grid(row=1, column=1, sticky="nsew", pady=5, padx=5)
         
         frame.rowconfigure(0, weight=1)
 
@@ -264,23 +294,23 @@ class VideoPanel():
             relief="raised",
             borderwidth=1,
         )
-        frame.grid(row=1, column=1, sticky="nsew", pady=5, padx=5)
+        frame.grid(row=1, column=2, sticky="nsew", pady=5, padx=5)
         
         self.rel_offset = 0
         self.rel_offset_buttons = []
         self.rel_offset_buttons = [tk.Button(master=frame, 
-                                            text=f"<",
-                                            font='sans 10',
+                                            text=f"-1F",
+                                            font='sans 8',
                                             bg="white",
                                             command=lambda: self._displayRelativeFrame(-1, btn=True)),
                                   tk.Button(master=frame, 
-                                            text=f"o",
-                                            font='sans 10',
+                                            text=f"Back",
+                                            font='sans 8',
                                             bg="white",
                                             command=lambda: self._displayRelativeFrame(0, btn=True)),
                                   tk.Button(master=frame, 
-                                            text=f">",
-                                            font='sans 10',
+                                            text=f"+1F",
+                                            font='sans 8',
                                             bg="white",
                                             command=lambda: self._displayRelativeFrame(1, btn=True))]
         self.rel_offset_buttons[0].pack(fill=fill, expand=expand, side=tk.LEFT)
@@ -294,7 +324,7 @@ class VideoPanel():
             relief="raised",
             borderwidth=1,
         )
-        frame.grid(row=1, column=2, sticky="nsew", pady=5, padx=5)
+        frame.grid(row=1, column=3, sticky="nsew", pady=5, padx=5)
 
         self.load_button = tk.Button(master=frame, 
                                  text=f"Load Video",
@@ -309,7 +339,7 @@ class VideoPanel():
             relief="raised",
             borderwidth=1,
         )
-        frame.grid(row=1, column=3, sticky="nsew", pady=5, padx=5)
+        frame.grid(row=1, column=4, sticky="nsew", pady=5, padx=5)
         
         frame.rowconfigure(0, weight=1)
 
@@ -935,9 +965,9 @@ class VideoPanel():
         new_index = self._getFrameIndexOfTime(timeParse.getDateTime(self.frame) + delt, ref_index=self.frame_index)
         # check if frame is found, no change otherwise
         self._jumpToFrame(new_index if new_index != -1 else self.frame_index)
-        
-#     @timeit
-    def _jumpNextChunk(self):
+
+        #     @timeit
+    def _jumpShortNextChunk(self):
         '''Jump forward one pre-defined "chunk" of time.'''
         
         # check if last chunk, cant go beyond last chunk
@@ -951,7 +981,7 @@ class VideoPanel():
         self._update_display()
     
 #     @timeit
-    def _jumpBackChunk(self):
+    def _jumpShortBackChunk(self):
         '''Jump back one pre-defined "chunk" of time.'''
         # deprecate if no diff
 #         new_index = self._getFrameIndexOfTime(timeParse.getDateTime(self.frame) - self.time_chunk, ref_index=self.frame_index)
@@ -962,26 +992,53 @@ class VideoPanel():
         # update display
         self._update_display()
     
-    def _jumpDoubleNextChunk(self):
-        '''Jump forward two pre-defined "chunk" of time.'''
+
+#     @timeit
+    def _jumpNextChunk(self):
+        '''Jump forward one pre-defined "chunk" of time.'''
         
-        # check if last 2 chunk, cant go beyond last chunk
+        # check if last 5 chunk, cant go beyond last chunk
         if (self.time == self.end_time or self.time - self.time_chunk == self.end_time):
             messagebox.showinfo("Video Complete", "video is fully processed!")
             return
         
-        # jump forward by 2 pre-defined chunks of time
-        self._jumpForwardTime(self.time_chunk * 2)
+        # jump forward by 5 pre-defined chunks of time
+        self._jumpForwardTime(self.time_chunk * 5)
+        # update display
+        self._update_display()
+    
+#     @timeit
+    def _jumpBackChunk(self):
+        '''Jump back one pre-defined "chunk" of time.'''
+        # deprecate if no diff
+#         new_index = self._getFrameIndexOfTime(timeParse.getDateTime(self.frame) - self.time_chunk, ref_index=self.frame_index)
+#         self.frame_index = new_index if new_index != -1 else self.frame_index
+
+        # jump back by 5 pre-defined chunks of time
+        self._jumpForwardTime(-1 * self.time_chunk * 5)
+        # update display
+        self._update_display()
+    
+    def _jumpLongNextChunk(self):
+        '''Jump forward two pre-defined "chunk" of time.'''
+        
+        # check if last 10 chunk, cant go beyond last chunk
+        if (self.time == self.end_time or self.time - self.time_chunk == self.end_time):
+            messagebox.showinfo("Video Complete", "video is fully processed!")
+            return
+        
+        # jump forward by 10 pre-defined chunks of time
+        self._jumpForwardTime(10 * self.time_chunk)
         # update display
         self._update_display()
         
-    def _jumpDoubleBackChunk(self):
+    def _jumpLongBackChunk(self):
         '''Jump back two pre-defined "chunk" of time.'''
 #         new_index = self._getFrameIndexOfTime(timeParse.getDateTime(self.frame) - 2 * self.time_chunk, ref_index=self.frame_index)
 #         self.frame_index = new_index if new_index != -1 else self.frame_index
 
-        # jump back by 2 pre-defined chunks of time
-        self._jumpForwardTime(-1 * self.time_chunk * 2)
+        # jump back by 10 pre-defined chunks of time
+        self._jumpForwardTime(-1 * self.time_chunk * 10)
         # update display
         self._update_display()
         
