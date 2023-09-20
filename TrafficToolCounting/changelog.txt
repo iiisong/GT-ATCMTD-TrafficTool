@@ -1,5 +1,8 @@
 TrafficToolCounting
 
+1.1.1 - button tweaks and time chunk improvements
+    > reduced to time chunks of 1s
+
 1.1.0 - github + code cleanup + some features added
     > added mostly proper PEP257 docstring convention
     > added increment and decrement feature
