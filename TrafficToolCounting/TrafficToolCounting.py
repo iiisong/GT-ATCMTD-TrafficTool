@@ -82,7 +82,7 @@ class TrafficTool(Tk):
                                     relief="groove",
                                     borderwidth=1)
         self.title_frame.grid(row=0, column=0, columnspan=2, sticky="nsew")
-        self.title_label = tk.Label(master=self.title_frame, text="Traffic Tool Counting v.1.1.2",)
+        self.title_label = tk.Label(master=self.title_frame, text="Traffic Tool Counting v.1.0.3",)
         self.title_label.pack()
         self.rowconfigure(0, weight=0) # static title height
         
@@ -149,7 +149,7 @@ class TrafficTool(Tk):
     
 if __name__ == "__main__":
 #     msg = '''
-#         (Yet Unnamed) TrafficTool v.1.0.2
+#         (Yet Unnamed) TrafficTool v.1.0.0
 #         \n
 #         \nInteractive interface for traffic data collection
 #         \n
