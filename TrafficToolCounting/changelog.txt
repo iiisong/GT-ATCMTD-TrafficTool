@@ -1,5 +1,9 @@
 TrafficToolCounting
 
+1.1.2 - exceed button
+    > added exceed button
+    > changed data values from ints to strings
+
 1.1.0 - github + code cleanup + some features added
     > added mostly proper PEP257 docstring convention
     > added increment and decrement feature
