@@ -145,7 +145,7 @@ class VideoPanel():
         frame.grid(row=1, column=0, sticky="nsew", pady=5, padx=5)
 
         self.start_button = tk.Button(master=frame, 
-                                 text=f"Start",
+                                 text=f"Start\n[A]",
                                  font='sans 10',
                                  bg="white",
                                  command=self._jumpStart)
@@ -190,10 +190,10 @@ class VideoPanel():
         frame.grid(row=0, column=2, sticky="nsew", pady=5, padx=5)
 
         self.double_next_button = tk.Button(master=frame, 
-                                 text=f"+{self.time_chunk.total_seconds()}s",
+                                 text=f"-{self.time_chunk.total_seconds()}s\n[Shift + ←]",
                                  font='sans 10',
                                  bg="white",
-                                 command=self._jumpShortNextChunk)
+                                 command=self._jumpShortBackChunk)
         self.double_next_button.pack(fill=fill, expand=expand)
 
         # Short (*1) next time button
@@ -205,7 +205,7 @@ class VideoPanel():
         frame.grid(row=0, column=3, sticky="nsew", pady=5, padx=5)
 
         self.double_next_button = tk.Button(master=frame, 
-                                 text=f"+{self.time_chunk.total_seconds()}s",
+                                 text=f"+{self.time_chunk.total_seconds()}s\n[Shift + →]",
                                  font='sans 10',
                                  bg="white",
                                  command=self._jumpShortNextChunk)
@@ -250,7 +250,7 @@ class VideoPanel():
         frame.grid(row=1, column=5, sticky="nsew", pady=5, padx=5)
 
         self.end_button = tk.Button(master=frame, 
-                                 text=f"End",
+                                 text=f"End\n[F]",
                                  font='sans 10',
                                  bg="white",
                                  command=self._jumpEnd)
@@ -1078,6 +1078,12 @@ class VideoPanel():
         # back button
         self.master.bind("s", lambda x: self._jumpBackChunk())
         self.master.bind("<Left>", lambda x: self._jumpBackChunk())
+
+        # short back button
+        self.master.bind("<Shift-Left>", lambda x: self._jumpShortBackChunk())
+
+        # short next button
+        self.master.bind("<Shift-Right>", lambda x: self._jumpShortNextChunk())
         
         # next button
         self.master.bind("d", lambda x: self._jumpNextChunk())

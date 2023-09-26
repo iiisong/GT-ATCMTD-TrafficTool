@@ -136,6 +136,14 @@ class InputPanel(tk.Frame):
 #         self.noChange_frame.grid(columnspan=self.display_lanes)
         self.entry_frame.grid(columnspan=self.display_lanes)
                     
+    # def exceedLaneStatus(self, lane):
+    #     '''Update status of lane to indicate that the queue exceeds the camera view
+        
+    #     Args:
+    #         lane: lane to update status of
+    #     '''
+        
+
     def inputLaneStatus(self, lane, length):
         '''Update status of the buttons on a specified lane.
         
@@ -486,6 +494,7 @@ class InputPanel(tk.Frame):
         self.header_frame_list = [] # header
         self.incre_frame_list = [] # increment by 1 button
         self.decre_frame_list = [] # decrement by 1 button
+        self.exceed_frame_list = [] # queue exceeds camera view button
         
         # tkinter configs
         fill=tk.BOTH
@@ -570,7 +579,25 @@ class InputPanel(tk.Frame):
                                                          state="disabled",
                                                          command=lambda j=j, i=i : self.inputLaneStatus(j, i)))
                 self.button_list[i][j].pack(fill=fill, expand=expand)
-        
+
+        # # ===IN-PROGRESS===
+        # # create (+) button (when queue exceeds camera view)
+        # for i in range(self.num_lanes):
+        #     self.exceed_frame_list.append(ttk.Frame(
+        #         master=self.parent,
+        #         relief="raised"
+        #         borderwidth=1
+        #     ))
+        #     self.button_frame_list[i].grid(row=(self.max_length + 4), column=self.display_lanes, sticky="nsew")
+            
+        #     self.exceed_frame_list.append(tk.Button(master=self.incre_frame_list[i], 
+        #                            text="(+)",
+        #                            font='sans 10',
+        #                            bg="white",
+        #                            state="disabled",
+        #                            command=lambda i=i: self.exceedLaneStatus(i)))
+        #     self.exceed_frame_list[i].pack(fill=fill, expand=expand)
+
         # ===IN-PROGRESS===
         # create no change entry button
 #         self.noChange_frame = ttk.Frame(
