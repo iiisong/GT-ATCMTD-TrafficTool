@@ -1,4 +1,4 @@
-# InputPanel v1.1.0
+# InputPanel v1.1.2
 
 import tkinter as tk # ui library
 from tkinter import Tk, ttk, filedialog, messagebox # ui library
@@ -17,6 +17,11 @@ from datetime import date, datetime, time, timedelta # system time library
 # timers for efficiency testing
 from functools import wraps
 import time
+
+# fix tcl color issues between platforms
+import platform
+# "systemWindowBackgroundColor" if Darwin (iOS) else "systemWindow" for Windows
+tcl_bg_color = "systemWindowBackgroundColor" if platform.system() == "Darwin" else "systemWindow"
 
 def timeit(func):
     @wraps(func)
@@ -69,7 +74,7 @@ class InputPanel(tk.Frame):
         self.df = None
         
         # default entry on excel when no option selected
-        self.default_val = 0
+        self.default_val = "0"
         
         # configure rows
         parent.rowconfigure(0,weight=1)
@@ -91,12 +96,18 @@ class InputPanel(tk.Frame):
         # camera view name for file prefix
         self.view_name = None 
         
+        # default value of each lane ["0", ...]
         self.curr_status = [self.default_val] * self.display_lanes
+        # default exceed status of each lane [False, ...]
+        self.exceed_status = [False] * self.display_lanes
         
+        # create tk
         self.input_pad = self.createTkPanel()
         
+        # load in lanes
         self.loadLanes(self.display_lanes)
         
+        # assign keybinds
         self.setKeyBinds()
 
         
@@ -114,6 +125,9 @@ class InputPanel(tk.Frame):
         self.header = ["Time"] + ["L" + str(i + 1) for i in range(self.num_lanes)]
         # create new current status length
         self.curr_status = [self.default_val] * self.display_lanes
+        # find exceed status from curr status
+        for i in range(len(self.curr_status)):
+            self.exceed_status[i] = len(self.curr_status[i].split("+")) == 2
         
         # iterate through panel and disable all those in deactivated lanes
         for i in range(self.max_length + 1):
@@ -124,6 +138,7 @@ class InputPanel(tk.Frame):
                     self.button_frame_list[i][j].grid()
                     if i == 0: 
                         self.header_frame_list[j].grid() # add header
+                        self.exceed_frame_list[j].grid() # add exceed
                         self.incre_frame_list[j].grid() # add incre
                         self.decre_frame_list[j].grid() # add decre
                 else:
@@ -131,6 +146,7 @@ class InputPanel(tk.Frame):
                     self.button_frame_list[i][j].grid_remove()
                     if i == 0: 
                         self.header_frame_list[j].grid_remove() # remove header
+                        self.exceed_frame_list[j].grid_remove() # add remove exceed
                         self.incre_frame_list[j].grid_remove() # remove incre
                         self.decre_frame_list[j].grid_remove() # remove decre
 #         self.noChange_frame.grid(columnspan=self.display_lanes)
@@ -155,27 +171,20 @@ class InputPanel(tk.Frame):
         self.debug_print("input lane status")
         
         # reset to default when click current selected non-default, de-select behavior
-        if length != self.default_val and self.curr_status[lane] == length:
+        if length != self.getRawLength(self.default_val) and self.getRawLength(self.curr_status[lane]) == length:
             # debug info
             self.debug_print("current button re-pressed, button raised")
-            # reset current selected to raised
-            try:
-                self.button_list[length][lane].config(relief="raised", 
-                                                      font="sans 10", 
-                                                      bg="white", 
-                                                      highlightbackground="systemWindowBackgroundColor")
-            except:
-                self.button_list[length][lane].config(relief="raised", 
-                                                      font="sans 10", 
-                                                      bg="white", 
-                                                      highlightbackground="systemWindow")
+            self.button_list[length][lane].config(relief="raised", 
+                                                  font="sans 10", 
+                                                  bg="white", 
+                                                  highlightbackground=tcl_bg_color)
 
             # set current value to default
             self.curr_status[lane] = self.default_val
             return
         
         # set current value to new value
-        self.curr_status[lane] = length
+        self.curr_status[lane] = str(length)
         
         # debug info
         self.debug_print(f"lane, length input: {(lane, length)}")
@@ -185,17 +194,11 @@ class InputPanel(tk.Frame):
         for l in range(self.max_length + 1):
             # if not new selection, deselect it
             if l != length:
-                try:
-                    self.button_list[l][lane].config(relief="raised", 
-                                                     font='sans 10', 
-                                                     bg="white", 
-                                                     highlightbackground="systemWindowBackgroundColor")  
-                except:
-                    self.button_list[l][lane].config(relief="raised", 
-                                                     font="sans 10", 
-                                                     bg="white", 
-                                                     highlightbackground="systemWindow")
-        
+                self.button_list[l][lane].config(relief="raised", 
+                                                 font='sans 10', 
+                                                 bg="white", 
+                                                 highlightbackground=tcl_bg_color)
+
         # set new value if not-default (default already set)
         #if length != self.default_val:
         # debug config
@@ -230,19 +233,31 @@ class InputPanel(tk.Frame):
         # bad and hacky code below
         # retrieve next default or existing value
         new_status = self.df.loc[self.time_index].values.tolist()
+        
+        new_status = [str(i) for i in new_status]
+            
         self.curr_status = [self.default_val] * self.display_lanes
+        # find exceed status from curr status
+        for l in range(len(new_status)):
+            self.exceed_status[l] = len(new_status[l].split("+")) == 2
+            
         # debug info
         self.debug_print(f"new status: {new_status}")
+        self.debug_print(f"new exceed status: {self.exceed_status}")
         self.updateLanesStatus(new_status)
         
     def updateLanesStatus(self, new_status):
         '''Update entry pad with status values.
         
         Args:
-            new_status: new status to update pad with'''
+            new_status: new status to update pad with
+        '''
         # set next value 
         for l in range(self.display_lanes):
-            self.inputLaneStatus(l, new_status[l])
+            self.debug_print(f"updating lane {l}")
+            # find exceed status from curr status
+            self.exceedLaneToggleStatus(l, self.exceed_status[l])
+            self.inputLaneStatus(l, self.getRawLength(new_status[l]))
             
 #     @timeit
     def loadDf(self, preload=False):
@@ -310,8 +325,10 @@ class InputPanel(tk.Frame):
         self.debug_print(self.time_index)
         
         # enter entry into dataframe
-        self.debug_print("entered entry")
-        self.df.loc[self.time_index] = self.curr_status[:self.display_lanes]
+        new_status = self.curr_status[:self.display_lanes]
+        new_status = [new_status[l] + "+" if self.exceed_status[l] else new_status[l] for l in range(len(new_status))]
+        self.debug_print(f"entered entry: {new_status}")
+        self.df.loc[self.time_index] = new_status
         # write dataframe to excel
         self.debug_print("wrote into excel at " + self.result_path)
         self.df.to_excel(self.result_path)
@@ -379,7 +396,41 @@ class InputPanel(tk.Frame):
             return
         
         # incre value by 1
-        self.inputLaneStatus(lane, self.curr_status[lane] - 1)
+        self.inputLaneStatus(lane, int(self.curr_status[lane]) - 1)
+        
+    def exceedLaneToggleStatus(self, lane, status):
+        '''Toggles exceed for the lane.
+        
+        Args:
+            lane: lane to toggle
+            status: new boolean status whether exceed
+        '''
+        self.debug_print(f"exceed toggled lane {lane} to {status}")
+        self.exceed_status[lane] = status
+        
+        if status:
+            # set button to sunken
+            self.debug_print("exceed button pressed, button down")
+            self.exceed_list[lane].config(relief="sunken", 
+                           font='sans 10 bold', 
+                           bg="yellow", 
+                           highlightbackground="yellow")
+        else:
+            self.debug_print("exceed button re-pressed, button raised")
+            self.exceed_list[lane].config(relief="raised", 
+                           font="sans 10", 
+                           bg="white", 
+                           highlightbackground=tcl_bg_color)
+            
+        
+        
+    def getRawLength(self, strnum):
+        '''Returns raw intlength of string with potential "+".
+        
+        Args:
+            strnum: string number with potential "+" end
+        '''
+        return int(strnum.split("+")[0])
     
     def resetInput(self):
         '''Resets/clears input panel and selection.'''
@@ -442,6 +493,7 @@ class InputPanel(tk.Frame):
             for j in range(self.num_lanes):
                 if j < self.display_lanes:
                     self.button_list[i][j]["state"] = "normal"
+                    self.exceed_list[j]["state"] = "normal"
                     self.incre_list[j]["state"] = "normal"
                     self.decre_list[j]["state"] = "normal"
 #                     self.button_frame_list[i][j].grid()
@@ -490,7 +542,9 @@ class InputPanel(tk.Frame):
         self.button_list = [] # list of buttons
         self.incre_list = []
         self.decre_list = []
+        self.exceed_list = []
         self.button_frame_list = [] # button frames
+        self.exceed_frame_list = [] # exceed current count button
         self.header_frame_list = [] # header
         self.incre_frame_list = [] # increment by 1 button
         self.decre_frame_list = [] # decrement by 1 button
@@ -562,42 +616,33 @@ class InputPanel(tk.Frame):
                     borderwidth=1,
                 ))
                 self.button_frame_list[i][j].grid(row=i+3, column=j, sticky="nsew")
-                try:
-                    self.button_list[i].append(tk.Button(master=self.button_frame_list[i][j], 
-                                                         text=f"{i}",
-                                                         font='sans 10',
-                                                         bg="white",
-                                                         highlightbackground="systemWindowBackgroundColor",
-                                                         state="disabled",
-                                                         command=lambda j=j, i=i : self.inputLaneStatus(j, i)))
-                except:
-                    self.button_list[i].append(tk.Button(master=self.button_frame_list[i][j], 
-                                                         text=f"{i}",
-                                                         font='sans 10',
-                                                         bg="white",
-                                                         highlightbackground="systemWindow",
-                                                         state="disabled",
-                                                         command=lambda j=j, i=i : self.inputLaneStatus(j, i)))
+                self.button_list[i].append(tk.Button(master=self.button_frame_list[i][j], 
+                                                     text=f"{i}",
+                                                     font='sans 10',
+                                                     bg="white",
+                                                     highlightbackground=tcl_bg_color,
+                                                     state="disabled",
+                                                     command=lambda j=j, i=i : self.inputLaneStatus(j, i)))
                 self.button_list[i][j].pack(fill=fill, expand=expand)
+        
+        for j in range(self.num_lanes):
+            self.parent.columnconfigure(j, weight=1) 
 
-        # # ===IN-PROGRESS===
-        # # create (+) button (when queue exceeds camera view)
-        # for i in range(self.num_lanes):
-        #     self.exceed_frame_list.append(ttk.Frame(
-        #         master=self.parent,
-        #         relief="raised"
-        #         borderwidth=1
-        #     ))
-        #     self.button_frame_list[i].grid(row=(self.max_length + 4), column=self.display_lanes, sticky="nsew")
+            self.exceed_frame_list.append(ttk.Frame(
+                master=self.parent,
+                relief="raised",
+                borderwidth=1,
+            ))
+            self.exceed_frame_list[j].grid(row=self.max_length+4, column=j, sticky="nsew")
+            self.exceed_list.append(tk.Button(master=self.exceed_frame_list[j], 
+                                                 text=f"+",
+                                                 font='sans 10',
+                                                 bg="white",
+                                                 highlightbackground=tcl_bg_color,
+                                                 state="disabled",
+                                                 command=lambda j=j, i=i : self.exceedLaneToggleStatus(j, not self.exceed_status[j])))
+            self.exceed_list[j].pack(fill=fill, expand=expand)
             
-        #     self.exceed_frame_list.append(tk.Button(master=self.incre_frame_list[i], 
-        #                            text="(+)",
-        #                            font='sans 10',
-        #                            bg="white",
-        #                            state="disabled",
-        #                            command=lambda i=i: self.exceedLaneStatus(i)))
-        #     self.exceed_frame_list[i].pack(fill=fill, expand=expand)
-
         # ===IN-PROGRESS===
         # create no change entry button
 #         self.noChange_frame = ttk.Frame(
@@ -623,8 +668,8 @@ class InputPanel(tk.Frame):
                     borderwidth=1,
             )
         
-        self.entry_frame.grid(row=(self.max_length + 4), column=0, columnspan=self.display_lanes, sticky="nsew")
-        self.parent.rowconfigure((self.max_length + 4), weight=1) 
+        self.entry_frame.grid(row=(self.max_length + 5), column=0, columnspan=self.display_lanes, sticky="nsew")
+        self.parent.rowconfigure((self.max_length + 5), weight=1) 
 
         self.entryButton = tk.Button(master=self.entry_frame, 
                                      text=f"Enter Entry\n[Space]",

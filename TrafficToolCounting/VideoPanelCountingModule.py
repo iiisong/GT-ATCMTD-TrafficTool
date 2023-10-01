@@ -39,7 +39,7 @@ class VideoPanel():
     '''
     def __init__(self, 
                  init_index=0, 
-                 time_chunk=5, 
+                 time_chunk=1, 
                  output_dir=None,
                  file_path=None, 
                  view_name=None,
